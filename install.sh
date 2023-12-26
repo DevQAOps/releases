@@ -1,5 +1,15 @@
+COMPANY_NAME=""
+while getopts "c:" opt;do
+case $opt in
+c)COMPANY_NAME="$OPTARG";;
+*)echo "无效的参数" >&2
+exit 1
+esac
+done
+if [ -z "$COMPANY_NAME" ];then
 echo "请输入公司名称:"
 read COMPANY_NAME
+fi
 REPO_OWNER="arextest"
 REPO_NAME="releases"
 AREX="arex"
