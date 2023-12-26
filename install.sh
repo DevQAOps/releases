@@ -45,7 +45,7 @@ fi
 if [ ! -d "$APP_DATA_FILE" ];then
 mkdir -p "$APP_DATA_FILE"
 fi
-echo "{}" >"$APP_DATA_FILE/config.json"
+echo "{}" >"$APP_DATA_FILE/data.json"
 echo "{
 \"companyName\": \"$COMPANY_NAME\"
 }" >"$APP_DATA_FILE/config.json"
