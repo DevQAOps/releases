@@ -2,12 +2,12 @@ COMPANY_NAME=""
 while getopts "c:" opt;do
 case $opt in
 c)COMPANY_NAME="$OPTARG";;
-*)echo "无效的参数" >&2
+*)echo "Invalid parameter" >&2
 exit 1
 esac
 done
 if [ -z "$COMPANY_NAME" ];then
-echo "请输入公司名称:"
+echo "Please enter the company name:"
 read COMPANY_NAME
 fi
 REPO_OWNER="arextest"
@@ -22,26 +22,28 @@ INSTALL_DIR="$ProgramFiles/$AREX"
 APP_DATA_FILE="$HOME/AppData/Roaming/$AREX"
 EXTENSION=".exe"
 else
-echo "不支持的操作系统类型。"
+echo "Unsupported operating system type."
 exit 1
 fi
 AREX_INSTALLER="arex_installer$EXTENSION"
+AREX_DATA_FILE="$APP_DATA_FILE/data.json"
+AREX_CONFIG_FILE="$APP_DATA_FILE/config"
 RELEASE_INFO=$(curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest")
 LATEST_VERSION=$(echo "$RELEASE_INFO"|grep '"tag_name":'|awk -F '"' '{print $4}')
 DOWNLOAD_URL=$(echo "$RELEASE_INFO"|grep "browser_download_url.*$EXTENSION"|grep -v "$EXTENSION\.blockmap"|cut -d : -f 2,3|tr -d \")
 if [ -z "$DOWNLOAD_URL" ];then
-echo "无法获取最新release的安装文件下载链接，请稍后再试。"
+echo "Failed to fetch the installation file download link for the latest release. Please try again later."
 exit 1
 fi
-echo "检测到最新的版本号为: $LATEST_VERSION"
-echo "正在下载最新的安装文件..."
+echo "Detected latest version: $LATEST_VERSION"
+echo "Downloading the latest installation file..."
 curl -L -o $AREX_INSTALLER $DOWNLOAD_URL
 if [[ "$OSTYPE" == "darwin"* ]];then
-echo "挂载dmg文件并安装应用程序..."
+echo "Mounting the dmg file and installing the application..."
 MOUNT_POINT=$(hdiutil attach $AREX_INSTALLER|grep -o "/Volumes/.*")
 APP_NAME=$(ls "$MOUNT_POINT"|grep ".app$")
 if [ -z "$APP_NAME" ];then
-echo "未找到应用程序。请检查dmg文件的内容。"
+echo "Application not found. Please check the contents of the dmg file."
 exit 1
 fi
 cp -R "$MOUNT_POINT/$APP_NAME" "$INSTALL_DIR"
@@ -49,14 +51,17 @@ hdiutil detach "$MOUNT_POINT"
 elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]];then
 ./$AREX_INSTALLER
 else
-echo "不支持的操作系统类型。"
+echo "Unsupported operating system type."
 exit 1
 fi
 if [ ! -d "$APP_DATA_FILE" ];then
 mkdir -p "$APP_DATA_FILE"
+else
+rm -rf "$APP_DATA_FILE"/*
 fi
-echo "{}" >"$APP_DATA_FILE/data.json"
-echo "{
-\"companyName\": \"$COMPANY_NAME\"
-}" >"$APP_DATA_FILE/config.json"
-echo "安装完成！"
+echo "{}" >"$AREX_DATA_FILE"
+if [ ! -f "$AREX_CONFIG_FILE" ];then
+touch "$AREX_CONFIG_FILE"
+fi
+echo "companyName=$COMPANY_NAME" >"$AREX_CONFIG_FILE"
+echo "Installation completed!"
