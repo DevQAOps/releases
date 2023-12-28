@@ -31,6 +31,7 @@ echo "Operation canceled."
 return
 fi
 COMPANY_NAME="$NEW_COMPANY_NAME"
+find "$APP_DATA_FILE" -mindepth 1 ! -name "$CONFIG_FILE" -exec rm -rf {} +
 echo "companyName=$COMPANY_NAME" >"$CONFIG_FILE"
 echo "Company name updated to: $COMPANY_NAME"
 echo ""
