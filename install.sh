@@ -43,10 +43,10 @@ echo "Mounting the dmg file and installing the application..."
 MOUNT_POINT=$(hdiutil attach $AREX_INSTALLER|grep -o "/Volumes/.*")
 APP_NAME=$(ls "$MOUNT_POINT"|grep ".app$")
 if [ -z "$APP_NAME" ];then
-echo "Application not found. Please check the contents of the dmg file."
+echo "Application not found. Please check the contents of the $EXTENSION file."
 exit 1
 fi
-cp -R "$MOUNT_POINT/$APP_NAME" "$INSTALL_DIR"
+ditto "$MOUNT_POINT/$APP_NAME" "$INSTALL_DIR/$APP_NAME"
 hdiutil detach "$MOUNT_POINT"
 elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]];then
 ./$AREX_INSTALLER
