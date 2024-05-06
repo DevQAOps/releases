@@ -46,7 +46,7 @@ if [ -z "$APP_NAME" ];then
 echo "Application not found. Please check the contents of the $EXTENSION file."
 exit 1
 fi
-ditto "$MOUNT_POINT/$APP_NAME" "$INSTALL_DIR/$APP_NAME"
+ditto "$MOUNT_POINT/$APP_NAME" "$INSTALL_DIR"
 hdiutil detach "$MOUNT_POINT"
 elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]];then
 ./$AREX_INSTALLER
